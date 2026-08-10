@@ -1,0 +1,36 @@
+# Guards the extension-safe contract of the extension-safe branches: the SDK must
+# keep compiling with APPLICATION_EXTENSION_API_ONLY enabled, or a rebase can
+# silently reintroduce extension-unavailable API and break downstream
+# app-extension builds.
+name: Extension-safe build
+
+on:
+  push:
+    branches:
+      - 'extension-safe*'
+  pull_request:
+    branches:
+      - 'extension-safe*'
+
+jobs:
+  build-extension-api-only:
+    name: Build with APPLICATION_EXTENSION_API_ONLY=YES (${{ matrix.platform }})
+    runs-on: macos-15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Device build compiles device-only branches (e.g. Reachability) that the
+          # simulator destination skips; simulator covers the inverse.
+          - platform: ios-device
+            destination: generic/platform=iOS
+          - platform: ios-simulator
+            destination: generic/platform=iOS Simulator
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Build with APPLICATION_EXTENSION_API_ONLY=YES
+        run: >
+          xcodebuild -scheme PostHog
+          -destination '${{ matrix.destination }}'
+          APPLICATION_EXTENSION_API_ONLY=YES
+          CODE_SIGNING_ALLOWED=NO build
