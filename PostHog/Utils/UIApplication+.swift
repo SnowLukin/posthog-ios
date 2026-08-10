@@ -9,8 +9,16 @@
     import UIKit
 
     extension UIApplication {
+        /// `UIApplication.shared` without the direct API reference forbidden by
+        /// `APPLICATION_EXTENSION_API_ONLY`; nil in app extension processes.
+        static var sharedIfAvailable: UIApplication? {
+            guard !isExtension() else { return nil }
+            return perform(NSSelectorFromString("sharedApplication"))?.takeUnretainedValue() as? UIApplication
+        }
+
         static func getCurrentWindow(filterForegrounded: Bool = true) -> UIWindow? {
-            let windowScenes = UIApplication.shared
+            guard let sharedApplication = sharedIfAvailable else { return nil }
+            let windowScenes = sharedApplication
                 .connectedScenes
                 .compactMap { $0 as? UIWindowScene }
                 .filter {

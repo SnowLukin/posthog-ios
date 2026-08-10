@@ -84,6 +84,7 @@
     @available(iOS 15.0, *)
     struct LinkQuestionView: View {
         @Environment(\.surveyAppearance) private var appearance
+        @Environment(\.openURL) private var openURL
 
         let question: PostHogDisplayLinkQuestion
         let onNextQuestion: (Bool) -> Void
@@ -98,8 +99,8 @@
 
                 BottomSection(label: question.buttonText ?? appearance.submitButtonText) {
                     onNextQuestion(true)
-                    if let link, UIApplication.shared.canOpenURL(link) {
-                        UIApplication.shared.open(link)
+                    if let link, UIApplication.sharedIfAvailable?.canOpenURL(link) == true {
+                        openURL(link)
                     }
                 }
             }

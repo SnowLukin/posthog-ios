@@ -59,7 +59,7 @@ final class ApplicationLifecyclePublisher: AppLifecyclePublishing {
     var isInBackground: Bool {
         #if os(iOS) || os(tvOS) || os(visionOS)
             guard Thread.isMainThread else { return false }
-            return UIApplication.shared.applicationState == .background
+            return UIApplication.sharedIfAvailable?.applicationState == .background
         #else
             return false
         #endif
