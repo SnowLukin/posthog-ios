@@ -336,7 +336,7 @@
 
         private func performSwizzleAppDelegateMethods() {
             #if os(iOS)
-                guard let appDelegate = UIApplication.shared.delegate,
+                guard let appDelegate = UIApplication.sharedIfAvailable?.delegate,
                       let appDelegateClass = object_getClass(appDelegate)
                 else {
                     hedgeLog("Push notification publisher: no app delegate found to swizzle")

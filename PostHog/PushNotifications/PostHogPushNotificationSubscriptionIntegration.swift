@@ -59,7 +59,7 @@
             // remote notifications anyway.
             guard Bundle.main.bundleURL.pathExtension == "app" else { return }
             DispatchQueue.main.async {
-                UIApplication.shared.registerForRemoteNotifications()
+                UIApplication.sharedIfAvailable?.registerForRemoteNotifications()
             }
         }
     }
